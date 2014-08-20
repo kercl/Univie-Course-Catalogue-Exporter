@@ -1,0 +1,29 @@
+{
+	"name": "Univie Course Catalogue exporter",
+	"version": "0.1",
+	"minimum_chrome_version": "29",
+	"description": "Export Univie Courses to Google Calendar or iCal.",
+	"icons": { "128": "img/logo128.png" },
+	
+	"background": { "scripts": ["js/background.js", "js/utils.js"] },
+	"content_scripts": [{ "matches": ["http://*/*"], "js": ["js/parser.js", "js/utils.js", "js/ical.js"] }],
+		
+	"oauth2": {
+		"client_id": "1045190187393-niteb4bfvdarc9a5fg86bdrtnpre8eks.apps.googleusercontent.com",
+		"scopes": [
+			"https://www.googleapis.com/auth/calendar"
+		]
+	},
+	"permissions": [
+		"tabs",
+		"identity",
+		"https://www.googleapis.com/"
+	],
+	"page_action": {
+			"default_name": "Show Selected Courses",
+			"default_icon": "img/logo32.png",
+			"default_popup": "htmlcss/popup.html"
+	},
+	"manifest_version": 2,
+	"content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'; connect-src https://www.googleapis.com; img-src https://calendar.google.com"
+}

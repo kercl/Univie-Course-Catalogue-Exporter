@@ -1,0 +1,13 @@
+{
+  "name": "univie-course-catalogue-exporter",
+  "title": "Univie Course Catalogue Exporter",
+  "id": "jid1-KH5wYVmDpWN37A-JH59sdb545a34kB",
+  "description": "Export Univie Courses to Google Calendar or iCal.",
+  "author": "Clemens Kerschbaumer",
+  "license": "BSD",
+  "version": "0.1",
+  
+  "permissions": {
+    "cross-domain-content": ["https://accounts.google.com"]
+  }
+}

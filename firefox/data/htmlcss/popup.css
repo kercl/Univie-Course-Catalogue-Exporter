@@ -1,0 +1,133 @@
+/**
+ * Copyright (c) 2014 Clemens Kerschbaumer. All rights reserved.
+ * Use of this source code is governed by the BSD license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  margin: 0px;
+  font: 13px arial, sans-serif;
+  overflow: hidden;
+}
+
+.box {
+	vertical-align: top;
+}
+
+
+table.schedule-table {
+	width: 100%;
+	border-collapse: collapse;
+	background-color: #FFF1DF;
+}
+
+table.entry-table {
+	width: 100%;
+}
+
+table.schedule-table td {
+	border: 1px solid #FFDD9D;
+}
+
+td.inactive-bgcol {
+	background-color: #FFDD9D;
+}
+
+.centering {
+	text-align: center;
+}
+
+input {
+	z-index: 100;
+}
+/*
+input[type=button] {
+	padding: 5px;
+	margin: 10px;
+}
+
+select {
+	padding: 5px;
+	margin: 10px;
+}*/
+
+#selection-area {
+	width: 520px;
+	height: 500px;
+	overflow: scroll;
+	border:1px solid #c0c0c0;
+}
+
+.selection-entry {
+	position:relative;
+	width: 100%;
+	border-bottom: 1px solid #c0c0c0;
+}
+
+.selection-sub-entry {
+	position:relative;
+	width: 100%;
+	border-bottom: 1px dashed #c0c0c0;
+}
+
+.color2 {
+	background-color: #edf2ff;
+}
+
+.color1 {
+	background-color: #ffffff;
+}
+
+.inner-entry {
+	padding: 10px;
+}
+
+.template {
+	display: none;
+}
+
+.btn-width {
+	width: 200px;
+}
+
+input[type=button] {
+	padding: 5px;
+}
+
+select {
+	padding: 5px;
+}
+
+input[type=button].gcal-btn-margin {
+	margin-top: -1px;
+}
+
+#info-box {
+	color: #a0a0a0;
+	display: none;
+}
+
+.spinner {
+	height: 40px;
+	width: 40px;
+	margin: 0px auto;
+	position: relative;
+	-webkit-animation: rotation .6s infinite linear;
+	animation: rotation .6s infinite linear;
+	border-left: 6px solid #FFDD9D;
+	border-right: 6px solid #FFDD9D;
+	border-bottom: 6px solid #FFDD9D;
+	border-top: 6px solid #FFF1DF;
+	border-radius: 100%;
+}
+
+@-webkit-keyframes rotation {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(359deg);}
+}
+
+@keyframes rotation {
+	from {transform: rotate(0deg);}
+	to {transform: rotate(359deg);}
+}
+
