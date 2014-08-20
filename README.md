@@ -8,7 +8,7 @@ It will soon be available at the Chrome Web Store.
 Loading the extension in Chrome manually
 ----------------------------------------
 
-First download all the files from the chrome folder to some local empty directory (it's best, if you just download the whole project by clicking the [Download ZIP] button on the left-hand-side of the github page and just forget about the firefox folder) and navigate to chrome://extensions in Chrome (alternatively use [Preferences]->[Tools]->[Extensions]). Next you have to enable the 'Developer mode' checkbox in the top-right corner of the extensions page. Then click on the -- now visible -- button [Load unpacked extension...] and go to the directory you downloaded the extension files to. Open it!
+First download all the files from the chrome folder to some local empty directory (it's best, if you just download the whole project by clicking the [Download ZIP] button on the right-hand-side of the github page and just forget about the firefox folder) and navigate to chrome://extensions in Chrome (alternatively use [Preferences]->[Tools]->[Extensions]). Next you have to enable the 'Developer mode' checkbox in the top-right corner of the extensions page. Then click on the -- now visible -- button [Load unpacked extension...] and go to the directory you downloaded the extension files to. Open it!
 That's it.
 
 Usage
