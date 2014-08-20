@@ -21,6 +21,9 @@ Further notes
 -------------
 
 Since the Firefox addon has not been reviewed by Mozilla you will see a warning, if you want to add it to Firefox.
+
+Even though the code for Google Calendar API calls is implemented in both, the chrome and the firefox extension, it can currently only be used in the Firefox extension. This has the simple reason, that in Chrome the app uses something called an application ID, which is generated randomly by the browser if you load the unpacked extension. As long as it's not uploaded to the Web Store this ID is not unique and the comparison with the key, assigned to the API key fails. Please be patient a little longer, until I can upload it to the Web Store.
+
 Adaptions to other browsers are left as an exercise for the reader.
 
 TODO
