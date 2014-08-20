@@ -25,6 +25,8 @@ Adaptions to other browsers are left as an exercise for the reader.
 
 TODO
 ====
+* More aesthetically pleasing interface.
+* Make dates, times and other information editable before exporting.
 * Still quite a few unparsable courses, especially from the physics department (check out the wiki for further information: https://github.com/koe-/Univie-Course-Catalogue-Exporter/wiki)
 * Optimization
 * ~~Set up oauth2.0 and google calendar export.~~
