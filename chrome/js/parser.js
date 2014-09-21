@@ -42,7 +42,7 @@ var eventPattern = {
 			 "{{time}}":     "<<TIME>>{{time#}}",
 			 "{{academ-q}}": "<<ACADEM_Q>>([cs]\\.t\\.)",
 			 "{{time-int}}": "(<<FROM>>{{time#}}[^\\S\\n]?-[^\\S\\n]?<<UNTIL>>{{time#}})",
-			 "{{text}}":     "([\\w üöäÜÖÄß\\!\\.,-:\\(\\)]+)",
+			 "{{text}}":     "([\\w üöäÜÖÄß\\!\\.,-:\\(\\)]+)", // do not include < and >!!!
 			 "{{loc}}":      "<<LOCATION>>{{text}}"},
 	
 	"patternStrings": ["^<<ATTR3>>(Beginn)?( und )?<<ATTR>>(Vorbesprechung)?:? ?{{day}}? ?{{freq}}? ?({{date-int}}|{{date}})( von| um)? ({{time-int}}|{{time}})( Uhr)?,?( Ort:| im)? {{loc}}",
@@ -160,7 +160,7 @@ function incrementByHour(tm) {
 
 function academicQuater(tm, sct) {
 	var atm = tm.split(":");
-	var mins = parseInt(atm[0])*60 + parseInt(atm[1]) + (sct == "s.t" ? -15: sct == "c.t." ? 15 : 0);
+	var mins = parseInt(atm[0])*60 + parseInt(atm[1]) + (sct == "s.t" ? 0: sct == "c.t." ? 15 : 0);
 	
 	atm[1] = "00" + (mins % 60);
 	atm[0] = "00" + ((mins / 60) % 24);

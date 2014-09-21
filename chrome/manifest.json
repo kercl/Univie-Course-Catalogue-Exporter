@@ -6,7 +6,7 @@
 	"icons": { "128": "img/logo128.png" },
 	
 	"background": { "scripts": ["js/background.js", "js/utils.js"] },
-	"content_scripts": [{ "matches": ["http://*/*"], "js": ["js/parser.js", "js/utils.js", "js/ical.js"] }],
+	"content_scripts": [{ "matches": ["http://*/*"], "js": ["js/parser.js", "js/utils.js", "js/ical.js", "js/customelements.js"] }],
 		
 	"oauth2": {
 		"client_id": "1045190187393-niteb4bfvdarc9a5fg86bdrtnpre8eks.apps.googleusercontent.com",

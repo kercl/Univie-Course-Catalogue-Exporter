@@ -4,6 +4,12 @@
 
 function GoogleCalendar() {
 	
+	this.listColors = function(callback) {
+		this.request({'path': '/calendar/v3/colors',
+					  'method': 'GET',
+					  'callback': callback}); //function(response)
+	}
+	
 	this.listCalendars = function(callback) {
 		this.request({'path': '/calendar/v3/users/me/calendarList',
 					  'method': 'GET',

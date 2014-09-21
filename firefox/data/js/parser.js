@@ -160,7 +160,7 @@ function incrementByHour(tm) {
 
 function academicQuater(tm, sct) {
 	var atm = tm.split(":");
-	var mins = parseInt(atm[0])*60 + parseInt(atm[1]) + (sct == "s.t" ? -15: sct == "c.t." ? 15 : 0);
+	var mins = parseInt(atm[0])*60 + parseInt(atm[1]) + (sct == "s.t" ? 0: sct == "c.t." ? 15 : 0);
 	
 	atm[1] = "00" + (mins % 60);
 	atm[0] = "00" + ((mins / 60) % 24);

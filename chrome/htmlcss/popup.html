@@ -5,59 +5,34 @@
 		<link href="popup.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
-		<div id="schedule-template" class="template">
-			<table class="schedule-table">
-				<tr>
-					<td class="centering __none_td_days__" rowspan="2" width="150">{{days}}<br />{{freq}}</td>
-					<td>{{first}}</td>
-					<td>{{from}}</td>
-				</tr>
-				<tr>
-					<td class="__none_td_last__">{{last}}</td>
-					<td>{{until}}</td>
-				</tr>
-				<tr>
-					<td colspan="3">{{note}}{{place}}</td>
-				</tr>
-			</table>
-		</div>
-		<div id="selection-entry-template" class="template">
-			<div class="inner-entry">
-				<table class="entry-table">
-					<tr class="{{title-row}}"><td></td><td colspan="2"><font size="3"><b>{{type}}: {{title}}</b></font></td></tr>
-					<tr class="{{title-row}}"><td>&nbsp;</td></tr>
-					<tr><td class="box" width="70"><b>Lecturers:</b></td><td class="box">{{lecturers}}</td><td class="box" width="150" align="right"><label><input type="checkbox" id="include-{{id}}-{{subid}}" />Include this course</label></td></tr>
-					<tr><td class="box" width="70"><b>Schedule:</b></td><td class="box" colspan="3">{{schedule}}</td></tr>
-				</table>
-			</div>
-		</div>
+		<table>
+			<tr>
+				<td width="180">
+					<div id="export-method">
+						<div name="method" id="method-ical" class="selected">iCalendar</div>
+						<div name="method" id="method-gcal">Google Calendar</div>
+						<div>
+						<table id="calendar-list">
+						<!-- calendar list -->
+						</table>
+						</div>
+					</div>
+				</td>
+				<td><div id="selection-area"></div></td>
+			</tr>
+			<tr height="50">
+				<td><div id="debug"></div></td>
+				<td class="align-right">
+					<input type="button" id="clear" value="Clear"  />
+					<input type="button" id="export" value="Export"  />
+				</td>
+			</tr>
+		</table>
 		
 		<script src="../js/utils.js"></script>
 		<script src="../js/ical.js"></script>
 		<script src="../js/gcal.js"></script>
+		<script src="../js/customelements.js"></script>
 		<script src="../js/popup.js"></script>
-		
-		<table>
-			<tr>
-			<td>
-				<div id="selection-area"></div>
-			</td>
-			<td class="box">
-				<select class="btn-width" id="calendar-select">
-					<option value="" disabled="disabled" selected="selected">Select a calendar...</option>
-				<select><br />
-				<input class="btn-width gcal-btn-margin" type="button" id="export-gcal" value="Export to Google calendar" />
-				<hr size="1" />
-				<input class="btn-width" type="button" id="export-ical" value="Save to iCalendar file" /><br />
-				<hr size="1" />
-				<input class="btn-width" type="button" id="clear" value="Clear" />
-				<div width="100%" align="center" id="info-box">
-					<br />
-					<div class="spinner"></div>
-					<br />
-					<div id="info-box-text"></div>
-				</div>
-			</td>
-			</tr>
 	</body>
 </html>

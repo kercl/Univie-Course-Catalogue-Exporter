@@ -11,6 +11,12 @@ function GoogleCalendar(authParams) {
 	
 	var authenticated = false;
 	var authState = "show-auth-screen";
+	
+	this.listColors = function(callback) {
+		this.request({'path': '/calendar/v3/colors',
+					  'method': 'GET',
+					  'callback': callback}); //function(response)
+	}
 
 	this.listCalendars = function(callback) {
 		this.request({'path': '/calendar/v3/users/me/calendarList',

@@ -12,16 +12,26 @@ var selectedCourses = {};
 
 function showPanel() {
 	var popup = require("sdk/panel").Panel({
-						width: 750,
-						height: 530,
+						width: 820,
+						height: 620,
 						contentURL: self.data.url("htmlcss/popup.html"),
-						contentScriptFile: [self.data.url("js/utils.js"), self.data.url("js/ical.js"), self.data.url("js/gcal.js"), self.data.url("js/popup.js")],
-						onHide: function() { popup.destroy(); },
+						contentScriptFile: [self.data.url("js/customelements.js"), 
+						                    self.data.url("js/utils.js"), 
+						                    self.data.url("js/ical.js"), 
+						                    self.data.url("js/gcal.js"), 
+						                    self.data.url("js/popup.js")],
+						/*onHide: function(runBackground) { 
+									if(runBackground)
+										popup.hide();
+									else
+										popup.destroy(); 
+								}*/
 						});
 	popup.port.on("clear-courses", function() {
 		selectedCourses = {};
 	});
 	popup.port.on("open-tab", function(msg) {
+		popup.hide();
 		msg.onReady = function(tab) {
 			var sc = tab.title.match(/^Success code=(.+)/i); 
 			if(sc) {
@@ -81,6 +91,13 @@ toggleButton = function(tab) {
 
 tabs.on('ready', toggleButton);
 tabs.on('activate', toggleButton);
+
+require("sdk/context-menu").Item({
+		  label: "Open Window",
+		  contentScript: 'self.on("click", function (node, data) {' +
+				         '  window.open("http://stackoverflow.com/questions/14572412/how-to-open-a-popup-window-via-firefox-addon-contextual-menu");' +
+				         '});'
+		});
 
 pageMod.PageMod({
 	include: "http://online.univie.ac.at/vlvz*",

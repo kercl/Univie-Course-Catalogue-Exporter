@@ -2,55 +2,47 @@
 // Use of this source code is governed by the BSD license that can be
 // found in the LICENSE file.
 
-var gcalInterface = new GoogleCalendar({});
-
+var gcalExp = new GoogleCalendar({});
+var selectedMethod = "ical";
+var calendarsFetched = false;
 var chrome; // compatibility object
-
-function toggleInfoBox(text) {
-	var ib = document.getElementById("info-box");
-	var ibt = document.getElementById("info-box-text");
-	
-	if(text) {
-		ib.style.display = "block";
-		ibt.textContent = text;
-	}else {
-		ib.style.display = "none";
-	}
-}
+var initParameters = {};
 
 function exportToICalendar() {
-	toggleInfoBox("Generating iCalendar...");
-	
 	calexp = new ICalendar();
 	
 	text = calexp.exportEvents(chrome.extension.getBackgroundPage().selectedCourses);
 
-	//console.log("Generating iCalendar:\n" + text);
-	
 	var pom = document.createElement('a');
 	pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 	pom.setAttribute('download', 'schedule.ics');
 	document.body.appendChild(pom);
 	pom.click();
-    
-    toggleInfoBox(null);
 }
 
 function exportToGoogleCalendar() {
-	toggleInfoBox("Exporting to Google calendar...");
+	var calSel = document.getElementsByName("calendar-select");
+	var calSelValue = "";
 	
-	var calSel = document.getElementById("calendar-select");
+	for(var i = 0; i < calSel.length; i++) {
+		if(calSel[i].checked) {
+			calSelValue = calSel[i].value;
+		}
+	}
+	
 	if(calSel.value == "") {
 		alert("Please select a calendar from the list.");
 	}else {
-		gcalInterface.exportEvents(calSel.value, chrome.extension.getBackgroundPage().selectedCourses, function(jsr, txtr){
-			});
+		if(gcalExp != null) {
+			gcalExp.exportEvents(calSelValue, chrome.extension.getBackgroundPage().selectedCourses, function(jsr, txtr){});
+			alert("Events successfully exported.");
+		}else {
+			alert("Google Calendar interface was not initialized corretly.")
+		}
 	}
-	
-	toggleInfoBox(null);
 }
 
-function valueToHumanReadable(schedule, val) {
+function prettyPrint(schedule, val) {
 	switch(val) {
 		case "DAYS": 
 			if("DAYS" in schedule) {
@@ -75,78 +67,151 @@ function valueToHumanReadable(schedule, val) {
 	return "";
 }
 
-function scheduleToHumanReadable(schedule) {
+function scheduleTable(schedule) {
 	var rtext = "";
+	var div = document.createElement("div");
 	
-	template = document.getElementById("schedule-template").innerHTML;
 	for(var i = 0; i < schedule.length; i++) {
-		current = template;
+		var current = document.createElement("table");
+		current.className = "schedule-table";
 		
-		var hDays = valueToHumanReadable(schedule[i], "DAYS");
-		var hFreq = valueToHumanReadable(schedule[i], "FREQ");
+		var tr = document.createElement("tr");
+		var td_freq = document.createElement("td"),
+		    td_first = document.createElement("td"),
+		    td_from = document.createElement("td");
+		td_freq.rowSpan = "2";
+		td_freq.width = "150";
+		tr.appendChild(td_freq);
+		tr.appendChild(td_first);
+		tr.appendChild(td_from);
+		current.appendChild(tr);
+		
+		tr = document.createElement("tr");
+		var td_last = document.createElement("td"),
+		    td_until = document.createElement("td");
+		tr.appendChild(td_last);
+		tr.appendChild(td_until);
+		current.appendChild(tr);
+		
+		tr = document.createElement("tr");
+		var td_note_place = document.createElement("td");
+		td_note_place.colSpan = "3";
+		tr.appendChild(td_note_place);
+		current.appendChild(tr);
+		
+		var hDays = prettyPrint(schedule[i], "DAYS");
+		var hFreq = prettyPrint(schedule[i], "FREQ");
 		if(hDays != "" || hFreq != "") {
-			current = current.replace("{{days}}", hDays);
-			current = current.replace("{{freq}}", hFreq);
+			td_freq.appendChild(document.createTextNode(hDays));
+			td_freq.appendChild(document.createElement("br"));
+			td_freq.appendChild(document.createTextNode(hFreq));
+			td_freq.className = "centering";
 		}else {
-			current = current.replace("__none_td_days__", "inactive-bgcol");
-			current = current.replace("{{days}}", "");
-			current = current.replace("{{freq}}", "");
+			td_freq.className = "centering inactive-bgcol";
 		}
-		current = current.replace("{{first}}", schedule[i]["FIRST_DATE"]?schedule[i]["FIRST_DATE"]:schedule[i]["DATE"]);
+		td_first.appendChild(document.createTextNode(schedule[i]["FIRST_DATE"]?schedule[i]["FIRST_DATE"]:schedule[i]["DATE"]));
 		if(schedule[i]["LAST_DATE"]) {
-			current = current.replace("{{last}}", schedule[i]["LAST_DATE"]);
+			td_last.appendChild(document.createTextNode(schedule[i]["LAST_DATE"]));
 		}else {
-			current = current.replace("{{last}}", "");
-			current = current.replace("__none_td_last__", "inactive-bgcol");
+			td_last.className = "inactive-bgcol";
 		}
-		current = current.replace("{{from}}", schedule[i]["FROM"]);
-		current = current.replace("{{until}}", schedule[i]["UNTIL"]);
-		if(schedule[i]["ATTR"])
-			current = current.replace("{{note}}", "<i>" + valueToHumanReadable(schedule[i], "ATTR") + "</i><br /><br />");
-		else
-			current = current.replace("{{note}}", "");
-		current = current.replace("{{place}}", schedule[i]["LOCATION"]);
+		td_from.appendChild(document.createTextNode(schedule[i]["FROM"]));
+		td_until.appendChild(document.createTextNode(schedule[i]["UNTIL"]));
 		
-		rtext = rtext + current + "<br />";
+		if(schedule[i]["ATTR"]) {
+			var italic = document.createElement("i");
+			italic.appendChild(document.createTextNode(prettyPrint(schedule[i], "ATTR")));
+			italic.appendChild(document.createElement("br"));
+			italic.appendChild(document.createElement("br"));
+			td_note_place.appendChild(italic);
+		}
+		td_note_place.appendChild(document.createTextNode(schedule[i]["LOCATION"]));
+		
+		div.appendChild(current);
 	}
 	
-	return rtext;
+	return div;
 }
 
 function generateList() {
-	var bg = chrome.extension.getBackgroundPage();	
+	var bg = chrome.extension.getBackgroundPage();
 	
 	color = 1;
+	var entry = document.createElement("div");
+	
+	var n = 0;
 	for(var key in bg.selectedCourses) {
 		for(var i = 0; i < bg.selectedCourses[key].length; i++) {
 			entryId = bg.selectedCourses[key][i]["id"] + "-" + i;
+
+			var div = document.createElement("div");
+			div.className = "inner-entry";
+			var table = document.createElement("table");
+			table.className = "entry-table";
 			
-			template = document.getElementById("selection-entry-template").innerHTML;
-			
-			entry = document.createElement("div");
-			
-			if(i == bg.selectedCourses[key].length - 1) {
-				entry.className = "selection-entry color" + color;
+			if((n % 2) == 0) {
+				div.style.borderLeft = "5px solid #006699";
 			}else {
-				entry.className = "selection-sub-entry color" + color;
+				div.style.borderLeft = "5px solid white";
 			}
+			
 			if(i == 0) {
-				template = template.replace("{{title-row}}", "");
-			}else {
-				template = template.replace("{{title-row}}", "template");
+				var tr = document.createElement("tr"); // row 1
+				var td = document.createElement("td");
+				tr.appendChild(td);
+			
+				td = document.createElement("td");
+				td.colSpan = "2";
+				td.style.fontWeight = "bold";
+				td.style.fontSize = "large";
+				td.textContent = bg.selectedCourses[key][i]["type"] + ": " + bg.selectedCourses[key][i]["title"];
+				tr.appendChild(td);
+				table.appendChild(tr);
 			}
 			
-			template = template.replace("{{title}}", bg.selectedCourses[key][i]["title"]);
-			template = template.replace("{{type}}", bg.selectedCourses[key][i]["type"]);
-			template = template.replace("{{lecturers}}", bg.selectedCourses[key][i]["lecturers"].join("<br />"));
-			template = template.replace("{{schedule}}", scheduleToHumanReadable(bg.selectedCourses[key][i]["date_time_place"]));
-			template = template.replace("{{id}}", bg.selectedCourses[key][i]["id"]);
-			template = template.replace("{{subid}}", i);
+			tr = document.createElement("tr"); // row 2
+			td = document.createElement("td");
+			td.style.fontWeight = "bold";
+			td.width = "80";
+			td.textContent = "Lecturers:";
+			tr.appendChild(td);
 			
-			entry.innerHTML = template;
-			document.getElementById("selection-area").appendChild(entry);
+			td = document.createElement("td");
+			td.className = "box";
+			td.textContent = bg.selectedCourses[key][i]["lecturers"].join(", ");
+			tr.appendChild(td);
 			
-			checkbox = document.getElementById("include-"+entryId);
+			td = document.createElement("td");
+			td.className = "box";
+			td.width = "150";
+			td.align = "right";
+			var label = document.createElement("label");
+			var checkbox = document.createElement("input");
+			checkbox.type = "checkbox";
+			checkbox.id = "include-" + bg.selectedCourses[key][i]["id"] + "-" + i;
+			label.appendChild(checkbox);
+			label.appendChild(document.createTextNode("Include this course"));
+			td.appendChild(label);
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			tr = document.createElement("tr"); // row 3
+			td = document.createElement("td");
+			td.style.fontWeight = "bold";
+			td.className = "box";
+			td.textContent = "Schedule:";
+			td.width = "80";
+			tr.appendChild(td);
+			
+			td = document.createElement("td");
+			td.className = "box";
+			td.colSpan = "3";
+			td.appendChild(scheduleTable(bg.selectedCourses[key][i]["date_time_place"]));
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			div.appendChild(table);
+			entry.appendChild(div);
 			
 			if(bg.selectedCourses[key][i]["exclude"])
 				checkbox.checked = false;
@@ -163,47 +228,97 @@ function generateList() {
 				};}(checkbox, bg.selectedCourses[key][i]["id"], i);
 		}
 		color = (color % 2) + 1;
+		n++;
 	}
+	document.getElementById("selection-area").appendChild(entry);
 }
 
 function fetchMyCalendars() {
-	gcalInterface.listCalendars(function(response) {
-			if(response.items == undefined)
-				return;
-			for(var i = 0; i < response.items.length; i++) {
-				option = document.createElement("option");
-				option.value = response.items[i].id;
-				option.textContent = response.items[i].summary;
-				
-				document.getElementById("calendar-select").appendChild(option);
-			}
-		});
+	gcalExp.listColors(function(colors) {
+			gcalExp.listCalendars(function(response) {
+					if(response.items == undefined)
+						return;
+					
+					for(var i = 0; i < response.items.length; i++) {
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						var div = document.createElement("div");
+						div.style.backgroundColor = colors.calendar[response.items[i].colorId].background;
+						div.style.borderRadius = "5px";
+						div.style.width = "15px";
+						div.style.height = "15px";
+						td.appendChild(div);
+						tr.appendChild(td);
+						td = document.createElement("td");
+						td.textContent = response.items[i].summary;
+						tr.appendChild(td)
+						td = document.createElement("td");
+						var radio = document.createElement("input");
+						radio["name"] = "calendar-select";
+						radio["type"] = "radio";
+						radio["value"] = response.items[i].id;
+						td.appendChild(radio);
+						tr.appendChild(td);
+						
+						document.getElementById("calendar-list").appendChild(tr);
+					}
+					
+					calendarsFetched = true;
+				});
+			});
 }
 
 function initPopup() {
 	generateList();
 	
-	if(gcalInterface.getAuthState() == "authentication-success") {
-		fetchMyCalendars();
-		document.getElementById("export-gcal").onclick = exportToGoogleCalendar;
-	}else {
-		document.getElementById("export-gcal").disabled = true;
-	}
+	link("method-ical", "onclick", function(elem) {
+		selectedMethod = "ical";
+		document.getElementById("calendar-list").style.display = "none";
+	});
 	
-	document.getElementById("export-ical").onclick = exportToICalendar;
+	link("method-gcal", "onclick", function(elem) {
+		selectedMethod = "gcal";
+		if(calendarsFetched == false) {
+			if(gcalExp.getAuthState() == "authentication-success") {
+				fetchMyCalendars();
+			}else {
+				gcalExp = new GoogleCalendar(initParameters);
+	
+				if(gcalExp.getAuthState() != "show-auth-screen") {
+					self.port.emit("show-panel");
+					//initPopup();
+					fetchMyCalendars();
+				}else {
+					gcalExp.getAuthToken({ 'interactive': true }, function() {
+						if(gcalExp.getAuthState() != "show-auth-screen") {
+							self.port.emit("show-panel");
+							//initPopup();
+							fetchMyCalendars();
+						}
+					});
+				}
+				document.getElementById("export-gcal").onclick = exportToGoogleCalendar;
+			}
+		}
+		document.getElementById("calendar-list").style.display = "inline";
+	});
+	
+	document.getElementById("export").onclick = 
+		function() {
+			if(selectedMethod == "ical") {
+				exportToICalendar();
+			}else if(selectedMethod == "gcal") {
+				exportToGoogleCalendar();
+			}
+		};
+	
 	document.getElementById("clear").onclick = 
 		function() { 
-			//chrome.extension.getBackgroundPage().selectedCourses = {};
-			document.getElementById("selection-area").innerHTML = "";
 			self.port.emit("clear-courses");
-		};
-	document.getElementById("sign-out").onclick = 
-		function() { 
-			document.getElementById("calendar-select").innerHTML = '<option value="" disabled="disabled" selected="selected">Select a calendar...</option>';
-			self.port.emit("store-data", {"auth-credentials": {}});
-			document.getElementById("export-gcal").disabled = true;
+			document.getElementById("selection-area").innerHTML = "";
 		};
 }
+
 /*
 window.onload = function() {*/
 	self.port.on("init-params", function(msg) {
@@ -215,23 +330,15 @@ window.onload = function() {*/
 			}
 		};
 		
-		gcalInterface = new GoogleCalendar({
+		initParameters = {
 			client_id:     msg.client_id, 
 			client_secret: msg.client_secret,
 			auth_credentials: msg.auth_credentials
-		});
+		};
 		
-		if(gcalInterface.getAuthState() != "show-auth-screen") {
-			self.port.emit("show-panel");
-			initPopup();
-		}else {
-			gcalInterface.getAuthToken({ 'interactive': true }, function() {
-				if(gcalInterface.getAuthState() != "show-auth-screen") {
-					self.port.emit("show-panel");
-					initPopup();
-				}
-			});
-		}
+		self.port.emit("show-panel");
+		initPopup();
 	});
 //};
+
 
