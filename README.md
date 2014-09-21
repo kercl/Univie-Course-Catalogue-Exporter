@@ -20,7 +20,7 @@ Your selected courses are not lost, if you go to some other website. This is use
 Further notes
 -------------
 
-Version 0.2 for Firefox awaits approval and will be publically available in the next couple of days.
+Version 0.2 for Firefox awaits approval and will be publicly available in the next couple of days.
 
 Even though the code for Google Calendar API calls is implemented in both, the chrome and the firefox extension, it can currently only be used in the Firefox extension. That's because in Chrome the authentication process uses something called an application ID, which is generated randomly by the browser if you load the unpacked extension. As long as it's not uploaded to the Web Store this ID is not unique and the comparison with the application ID that assigned to the API key fails. Please be patient a little longer, until I can upload it to the Web Store.
 
